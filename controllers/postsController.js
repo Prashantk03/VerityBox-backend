@@ -5,6 +5,8 @@ const generateReflection = require('../utils/generateReflection');
 exports.createPost = async (req, res) => {
   const { text, feedbackType, sessionId, public: isPublic } = req.body;
 
+//*************Text Moderation***************/
+
   try {
     const moderation = await moderateText(text);
 
@@ -36,6 +38,34 @@ exports.createPost = async (req, res) => {
   };
 
 };
+
+//****************Likes*****************/
+exports.toggleLike = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { sessionId } = req.body; // sessionId from frontend
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ error: "Post not found" });
+
+    if (post.likedBy.includes(sessionId)) {
+      // 🔹 Unlike
+      post.likes -= 1;
+      post.likedBy = post.likedBy.filter((id) => id !== sessionId);
+    } else {
+      // 🔹 Like
+      post.likes += 1;
+      post.likedBy.push(sessionId);
+    }
+
+    await post.save();
+
+    res.json({ likes: post.likes, liked: post.likedBy.includes(sessionId) });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to toggle like" });
+  }
+};
+
 
 exports.getPostsBySession = async (req, res) => {
   const sessionId = req.params.id;
