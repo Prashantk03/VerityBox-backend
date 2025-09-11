@@ -1,11 +1,11 @@
 const Post = require("../models/Post");
 const moderateText = require("../utils/moderateText");
-const generateReflection = require('../utils/generateReflection');
+const generateReflection = require("../utils/generateReflection");
 
 exports.createPost = async (req, res) => {
   const { text, feedbackType, sessionId, public: isPublic } = req.body;
 
-//*************Text Moderation***************/
+  //*************Text Moderation***************/
 
   try {
     const moderation = await moderateText(text);
@@ -17,9 +17,9 @@ exports.createPost = async (req, res) => {
       });
     }
 
-    let responseAI = '';
-    if (feedbackType === 'ai'){
-        responseAI = await generateReflection(text);
+    let responseAI = "";
+    if (feedbackType === "ai") {
+      responseAI = await generateReflection(text);
     }
 
     const post = new Post({
@@ -27,7 +27,7 @@ exports.createPost = async (req, res) => {
       responseAI,
       feedbackType,
       sessionId,
-      public: isPublic 
+      public: isPublic,
     });
 
     await post.save();
@@ -35,8 +35,7 @@ exports.createPost = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
-  };
-
+  }
 };
 
 //****************Likes*****************/
@@ -66,21 +65,20 @@ exports.toggleLike = async (req, res) => {
   }
 };
 
-
 exports.getPostsBySession = async (req, res) => {
   const sessionId = req.params.id;
 
   try {
     const posts = await Post.find({ sessionId }).sort({ createdAt: -1 });
     res.status(200).json(posts);
-  } catch (err){
+  } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Failed to fetch posts" });
   }
 };
 
 exports.getPublicPosts = async (req, res) => {
-  try{
+  try {
     const posts = await Post.find({ public: true }).sort({ createdAt: -1 });
     res.status(200).json(posts);
   } catch (err) {
@@ -89,8 +87,10 @@ exports.getPublicPosts = async (req, res) => {
 };
 
 exports.getCommentsForPost = async (req, res) => {
-  try{
-    const comments = await Comment.find({ postId: req.params.postId }).sort({ createdAt: 1 });
+  try {
+    const comments = await Comment.find({ postId: req.params.postId }).sort({
+      createdAt: 1,
+    });
     res.status(200).json(comments);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch comments" });
