@@ -1,12 +1,13 @@
 const Post = require("../models/Post");
+const mongoose = require("mongoose");
 const moderateText = require("../utils/moderateText");
 const generateReflection = require("../utils/generateReflection");
 
+//***************Create Post*******************/
 exports.createPost = async (req, res) => {
   const { text, feedbackType, sessionId, public: isPublic } = req.body;
 
   //*************Text Moderation***************/
-
   try {
     const moderation = await moderateText(text);
 
@@ -38,7 +39,7 @@ exports.createPost = async (req, res) => {
   }
 };
 
-//****************Likes*****************/
+//****************Like Post*****************/
 exports.toggleLike = async (req, res) => {
   try {
     const { postId } = req.params;
@@ -65,6 +66,7 @@ exports.toggleLike = async (req, res) => {
   }
 };
 
+//************Get Post*****************/
 exports.getPostsBySession = async (req, res) => {
   const sessionId = req.params.id;
 
@@ -86,6 +88,7 @@ exports.getPublicPosts = async (req, res) => {
   }
 };
 
+//****************Get Comment***************/
 exports.getCommentsForPost = async (req, res) => {
   try {
     const comments = await Comment.find({ postId: req.params.postId }).sort({
@@ -94,5 +97,36 @@ exports.getCommentsForPost = async (req, res) => {
     res.status(200).json(comments);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch comments" });
+  }
+};
+
+//***************Delete Post****************/
+exports.deletePost = async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    const { sessionId } = req.body; 
+   
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: "Invalid post ID" });
+    }
+    
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    
+    if (post.sessionId !== sessionId) {
+      return res
+        .status(403)
+        .json({ message: "Unauthorized to delete this post" });
+    }
+
+    await Post.findByIdAndDelete(postId);
+    res.status(200).json({ message: "Post deleted successfully" });
+    
+  } catch (error) {
+    console.error("Delete error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

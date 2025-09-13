@@ -3,13 +3,13 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const app = express(); // ✅ Create app first
+const app = express(); 
 
-// Middleware
+//*************Middleware************/
 app.use(cors());
 app.use(express.json());
 
-// Routes
+//**************Routes**************/
 const authRoutes = require("./routes/auth");
 const postRoutes = require("./routes/posts");
 const commentRoutes = require("./routes/comments");
@@ -18,7 +18,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 
-// Mongo connection + start server
+//**Mongo connection + start server**/
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {

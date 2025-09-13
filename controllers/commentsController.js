@@ -1,6 +1,8 @@
+const Post = require("../models/Post");
 const Comment = require("../models/comment");
 const moderateComment = require("../utils/moderateComment");
 
+//**************Add Comment***************/
 exports.addComment = async (req, res) => {
   const { postId, text, author } = req.body;
 
@@ -19,3 +21,4 @@ exports.addComment = async (req, res) => {
     res.status(500).json({ error: "Failed to add comment" });
   }
 };
+
