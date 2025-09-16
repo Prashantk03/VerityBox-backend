@@ -1,9 +1,16 @@
-module.exports = async function moderateComment(text) {
-  const flaggedWords = ["hate", "kill", "racist", "religious hate"];
-  for (let word of flaggedWords) {
-    if (text.toLowerCase().includes(word)) {
-      return { safe: false, reason: `Contains inappropriate word: "${word}"` };
-    }
+// middlewares/moderateComment.js
+export const moderateComment = (req, res, next) => {
+  const { text } = req.body;
+
+  if (!text || typeof text !== "string" || text.trim().length === 0) {
+    return res.status(400).json({ error: "Invalid comment text" });
   }
-  return { safe: true };
+
+  // Example keyword filter
+  const bannedWords = ["spam", "abuse"];
+  if (bannedWords.some(word => text.toLowerCase().includes(word))) {
+    return res.status(400).json({ error: "Comment contains banned content" });
+  }
+
+  next();
 };

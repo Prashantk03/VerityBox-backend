@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { addComment } = require("../controllers/commentsController");
+const {
+  addComment,
+  deleteComment,
+} = require("../controllers/commentsController");
 const Comment = require("../models/comment");
 
 router.post("/", addComment);
@@ -13,5 +16,7 @@ router.get("/:postId", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch comments" });
   }
 });
+
+router.delete("/:commentId", deleteComment);
 
 module.exports = router;
