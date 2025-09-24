@@ -1,4 +1,4 @@
-const Post = require("../models/Post");
+const Post = require("../models/post");
 const mongoose = require("mongoose");
 const moderateText = require("../utils/moderateText");
 const generateReflection = require("../utils/generateReflection");

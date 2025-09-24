@@ -1,4 +1,4 @@
-const Post = require("../models/Post");
+const Post = require("../models/post");
 const Comment = require("../models/comment");
 const moderateComment = require("../utils/moderateComment");
 
