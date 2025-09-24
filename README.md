@@ -13,15 +13,11 @@ MongoDB: Database to store user and post data
 
 JWT: For user authentication (if applicable)
 
-Socket.io: For real-time updates
-
 Mongoose: For MongoDB object modeling
 
 Features:
 
 API Endpoints: CRUD operations for posts, comments, and users.
-
-Real-time Updates: Through WebSockets for live feedback and comments.
 
 Content Moderation: Automated and manual moderation for safe user experience.
 
