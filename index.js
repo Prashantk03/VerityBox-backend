@@ -3,8 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-
-const app = express(); 
+const app = express();
 
 //*************Middleware************/
 app.use(cors({
@@ -24,16 +23,21 @@ app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 
 //**********Health Check************/
-app.get('/health', (req,res) => {
-  res.status(200).json({ status: 'ok'});
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
 });
 
-//**Mongo connection + start server**/
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
+//**Mongo connection + start server**
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("MongoDB connected");
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
-  .catch((err) => console.error(err));
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
+    process.exit(1); // Exit on failure to trigger Render redeploy
+  }
+};
+
+startServer();
