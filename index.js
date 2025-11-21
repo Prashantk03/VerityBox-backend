@@ -7,7 +7,7 @@ const app = express();
 
 //*************Middleware************/
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: process.env.FRONTEND_URL || "*",
   methods: ["GET", "POST", "DELETE"],
   credentials: true,
 }));
@@ -22,22 +22,22 @@ app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 
-//**********Health Check************/
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
 
-//**Mongo connection + start server**
-const startServer = async () => {
+//***********Mongo connection************/
+async function connectDB() {
   try {
     await mongoose.connect(process.env.MONGO_URI);
     console.log("MongoDB connected");
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   } catch (err) {
     console.error("MongoDB connection error:", err);
-    process.exit(1); 
   }
-};
+}
 
-startServer();
+//*************Start server**************/
+const PORT = process.env.PORT || 5000;
+
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log("Server running on port:", PORT);
+  });
+});
