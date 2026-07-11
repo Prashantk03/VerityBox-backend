@@ -1,4 +1,5 @@
 const Post = require("../models/post");
+const Session = require("../models/session");
 const Comment = require("../models/comment");
 const moderateComment = require("../utils/moderateComment");
 
@@ -14,8 +15,26 @@ exports.addComment = async (req, res) => {
   }
 
   try {
-    const comment = new Comment({ postId, text, sessionId });
+    const session = await Session.findOne({ sessionId });
+
+    if (!session || !session.displayName) {
+      return res.status(400).json({
+        error: "Anonymous identity not found.",
+      });
+    }
+    const comment = new Comment({
+      postId,
+      text,
+      sessionId,
+      displayName: session.displayName,
+    });
     await comment.save();
+    
+    await Session.findOneAndUpdate(
+      { sessionId },
+      { $inc: { commentsCount: 1 } },
+    );
+
     res.status(201).json(comment);
   } catch (err) {
     res.status(500).json({ error: "Failed to add comment" });
@@ -24,17 +43,19 @@ exports.addComment = async (req, res) => {
 
 //**************Delete Comment************/
 exports.deleteComment = async (req, res) => {
-  try{
+  try {
     const { commentId } = req.params;
     const { sessionId } = req.body;
-    
+
     const comment = await Comment.findById(commentId);
-    if(!comment) {
+    if (!comment) {
       return res.status(404).json({ error: "Comment not found" });
     }
 
     if (comment.sessionId !== sessionId) {
-      return res.status(403).json({ error: "Not authorized to delete this comment" });
+      return res
+        .status(403)
+        .json({ error: "Not authorized to delete this comment" });
     }
 
     await comment.deleteOne();
@@ -44,4 +65,3 @@ exports.deleteComment = async (req, res) => {
     res.status(500).json({ error: "Failed to delete comment" });
   }
 };
-

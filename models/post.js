@@ -4,6 +4,10 @@ const postSchema = new mongoose.Schema({
   text: String,
   responseAI: String,
   sessionId: String,
+  displayName: {
+    type: String,
+    required: true,
+  },
   feedbackType: {
     type: String,
     enum: ["ai", "community"],

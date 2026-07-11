@@ -17,10 +17,12 @@ app.use(express.json());
 const authRoutes = require("./routes/auth");
 const postRoutes = require("./routes/posts");
 const commentRoutes = require("./routes/comments");
+const profileRoutes = require("./routes/profile");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/profile", profileRoutes);
 
 
 //***********Mongo connection************/

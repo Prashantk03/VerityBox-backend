@@ -11,7 +11,19 @@ const commentSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  sessionId: { type: String, required: true },
+  sessionId: {
+    type: String,
+    required: true,
+  },
+  displayName: {
+    type: String,
+    required: true,
+  },
+
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model("Comment", commentSchema);
